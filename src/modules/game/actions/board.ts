@@ -6,10 +6,9 @@ class Board {
     public turnNum = 0;
     public player1Move = true;
 
-    constructor () {
-    }
+    constructor() {}
 
-    public playCard (player: number, card: Card, slot: number) {
+    public playCard(player: number, card: Card, slot: number) {
         if (player === 1 || player === 2) {
             const arr = player === 1 ? this.player1 : this.player2;
             if (!arr[slot]) {
@@ -23,7 +22,7 @@ class Board {
         }
     }
 
-    public attack (attackerId: number, receiverId: number) {
+    public attack(attackerId: number, receiverId: number) {
         const attackerCards = this.player1Move ? this.player1 : this.player2;
         const receiverCards = !this.player1Move ? this.player1 : this.player2;
         const attackerCard = attackerCards.find(l => l.id === attackerId);
@@ -42,7 +41,7 @@ class Board {
         return true;
     }
 
-    public endTurn () {
+    public endTurn() {
         if (this.player1Move) {
             this.player1Move = false;
         } else {

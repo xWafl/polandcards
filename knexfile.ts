@@ -5,11 +5,13 @@ config();
 
 const options = {
     client: process.env.DB_CLIENT || "sqlite3",
-    connection: process.env.CONNECTION ? {
-        database: process.env.CONNECTION
-    } : {
-        filename: "db/db.sqlite3"
-    },
+    connection: process.env.CONNECTION
+        ? {
+              database: process.env.CONNECTION
+          }
+        : {
+              filename: "db/db.sqlite3"
+          },
     migrations: {
         directory: "db/migrations",
         talbeName: "migrations"
@@ -27,11 +29,13 @@ const configs: Record<string, Config> = {
 
     test: {
         ...options,
-        connection: process.env.CONNECTION ? {
-            database: process.env.CONNECTION
-        } : {
-            filename: "db/db.sqlite3"
-        },
+        connection: process.env.CONNECTION
+            ? {
+                  database: process.env.CONNECTION
+              }
+            : {
+                  filename: "db/db.sqlite3"
+              }
     },
 
     production: {
