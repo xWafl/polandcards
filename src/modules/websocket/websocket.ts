@@ -4,7 +4,7 @@ import { games } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
 
-const websocketRoutes = (ws: WebSocket, message: WSData) => {
+const websocketRoutes = (ws: WebSocket, message: WSData): void => {
     const { category, data } = websocketHandler(message.toString());
     if (category === "newgame") {
         const newMaxId =
@@ -15,22 +15,18 @@ const websocketRoutes = (ws: WebSocket, message: WSData) => {
         games[newMaxId].startGame();
         ws.send(sendSocket("gameData", games[newMaxId].gameData));
         ws.send(sendSocket("playerData", games[newMaxId].player1));
-    } else if (category === "playCard") {
-        console.log("Data", data);
-        const gameId = data.id;
-        games[gameId].playCard(data.cardId, data.slot);
-        const publicState = games[gameId].gameData;
-        const playerData = games[gameId].player1;
-        ws.send(sendSocket("gameData", publicState));
-        ws.send(sendSocket("playerData", playerData));
-    } else if (category === "attackCard") {
-        const gameId = data.id;
-        games[gameId].attack(data.cardId, data.receiverId);
-        const publicState = games[gameId].gameData;
-        const playerData = games[gameId].player1;
-        ws.send(sendSocket("gameData", publicState));
-        ws.send(sendSocket("playerData", playerData));
+        return;
     }
+    const gameId = data.id;
+    if (category === "playCard") {
+        games[gameId].playCard(data.cardId, data.slot);
+    } else if (category === "attackCard") {
+        games[gameId].attack(data.cardId, data.receiverId);
+    }
+    const publicState = games[gameId].gameData;
+    const playerData = games[gameId].player1;
+    ws.send(sendSocket("gameData", publicState));
+    ws.send(sendSocket("playerData", playerData));
 };
 
 export { websocketRoutes };
