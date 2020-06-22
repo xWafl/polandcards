@@ -38,7 +38,7 @@ describe("Board class", () => {
         it("The attacker takes damage", () => {
             expect(board.player1.cards[0]).to.deep.equal({
                 ...myCard,
-                ...{ health: 1 }
+                health: 1
             });
         });
         it("The receiver dies", () => {
