@@ -1,10 +1,17 @@
 import { Card } from "../types/Card";
+import { Player } from "../types/Player";
 
 export class Board {
-    public readonly player1: Card[] = Array(4);
-    public readonly player2: Card[] = Array(4);
-    public player1health = 30;
-    public player2health = 30;
+    public readonly player1: Player = {
+        cards: Array(4) as Card[],
+        health: 30,
+        gold: 0
+    };
+    public readonly player2: Player = {
+        cards: Array(4) as Card[],
+        health: 30,
+        gold: 0
+    };
     public turnNum = 0;
     public player1Move = true;
 
@@ -14,7 +21,7 @@ export class Board {
         if (!(player === 0 || player === 1)) {
             return false;
         }
-        const arr = player === 0 ? this.player1 : this.player2;
+        const arr = player === 0 ? this.player1.cards : this.player2.cards;
         if (arr[slot]) {
             return false;
         }
@@ -23,21 +30,25 @@ export class Board {
     }
 
     private removeDeadCards() {
-        (this.player1
+        (this.player1.cards
             .map((l, idx) => (l?.health <= 0 ? idx : undefined))
             .filter(l => l !== undefined) as number[]).map(l => {
-            delete this.player1[l];
+            delete this.player1.cards[l];
         });
-        (this.player2
+        (this.player2.cards
             .map((l, idx) => (l?.health <= 0 ? idx : undefined))
             .filter(l => l !== undefined) as number[]).map(l => {
-            delete this.player2[l];
+            delete this.player2.cards[l];
         });
     }
 
     public attack(attackerId: number, receiverId: number) {
-        const attackerCards = this.player1Move ? this.player1 : this.player2;
-        const receiverCards = !this.player1Move ? this.player1 : this.player2;
+        const attackerCards = this.player1Move
+            ? this.player1.cards
+            : this.player2.cards;
+        const receiverCards = !this.player1Move
+            ? this.player1.cards
+            : this.player2.cards;
         const attackerCard = attackerCards.find(l => l?.id === attackerId);
         const receiverCard = receiverCards.find(l => l?.id === receiverId);
         if (!(attackerCard && receiverCard)) {
