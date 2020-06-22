@@ -7,38 +7,46 @@ export class Board {
         cards: Array(4) as BoardCard[],
         health: 30,
         gold: 0,
-        deck: [],
-        hand: [
+        deck: [
             <Card>{
                 id: 2,
                 name: "Poland",
                 attack: 3,
                 health: 4,
                 gold: 3
+            },
+            <Card>{
+                id: 4,
+                name: "Niederlande",
+                attack: 2,
+                health: 5,
+                gold: 3
             }
-        ]
+        ],
+        hand: []
     };
     public readonly player2: Player = {
         cards: Array(4) as BoardCard[],
         health: 30,
         gold: 0,
-        deck: [],
-        hand: [
+        deck: [
             <Card>{
                 id: 3,
-                name: "Poland",
+                name: "Litwa",
                 attack: 3,
                 health: 2,
                 gold: 3
             }
-        ]
+        ],
+        hand: []
     };
     public turnNum = 0;
     public player1Move = true;
 
     constructor() {}
 
-    public playCard(player: number, cardId: number, slot: number) {
+    public playCard(cardId: number, slot: number) {
+        const player = this.player1Move ? 0 : 1;
         if (!(player === 0 || player === 1)) {
             return new GameResponse(false, "Player not valid");
         }
@@ -49,7 +57,10 @@ export class Board {
         }
         const arr = player === 0 ? this.player1.cards : this.player2.cards;
         if (arr[slot]) {
-            return new GameResponse(false, "Invalid card slot");
+            return new GameResponse(false, "Card slot is already filled");
+        }
+        if (slot > 4) {
+            return new GameResponse(false, "Card slot out of bounds");
         }
         arr[slot] = { ...card, attackable: false };
         return new GameResponse(true);
@@ -89,12 +100,34 @@ export class Board {
         return new GameResponse(true);
     }
 
+    public drawCards(player: number, amount: number = 1) {
+        const playerData = player === 0 ? this.player1 : this.player2;
+        for (let i = 0; i < amount; i++) {
+            const card = playerData.deck.shift();
+            if (card) {
+                playerData.hand.push(card);
+            } else {
+                break;
+            }
+        }
+    }
+
+    public startGame() {
+        if (this.turnNum === 0) {
+            this.turnNum++;
+            this.drawCards(0, 3);
+            this.drawCards(1, 3);
+        }
+    }
+
     public endTurn() {
         if (this.player1Move) {
             this.player1Move = false;
         } else {
             this.player1Move = true;
             this.turnNum++;
+            this.drawCards(0);
+            this.drawCards(1);
         }
     }
 }
