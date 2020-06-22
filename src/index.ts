@@ -8,6 +8,7 @@ import bodyParser from "koa-bodyparser";
 import errorHandler from "./common/error/middleware/errorHandler";
 
 import apiRouter from "./modules/apiRouter";
+import { allowCors } from "./modules/cors/middleware/allowCors";
 
 const app = new Koa();
 
@@ -17,6 +18,7 @@ const port = process.env.PORT || 5900;
 
 app.use(bodyParser());
 app.use(json());
+app.use(allowCors());
 
 /* istanbul ignore if */
 if (process.env.NODE_ENV === "development") {
