@@ -49,6 +49,16 @@ export class Board {
         return this.player1.health <= 0 || this.player2.health <= 0;
     }
 
+    get gameData(): Record<string, Omit<Player, "deck" | "hand">> {
+        const player1 = this.player1;
+        delete player1.hand;
+        delete player1.deck;
+        const player2 = this.player2;
+        delete player2.hand;
+        delete player2.deck;
+        return { player1, player2 };
+    }
+
     public playCard(cardId: number, slot: number) {
         const player = this.player1Move ? 0 : 1;
         if (!(player === 0 || player === 1)) {
