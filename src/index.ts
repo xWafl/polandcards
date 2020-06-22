@@ -9,8 +9,11 @@ import errorHandler from "./common/error/middleware/errorHandler";
 
 import apiRouter from "./modules/apiRouter";
 import { allowCors } from "./modules/cors/middleware/allowCors";
-import { sendSocket } from "./modules/websocket/handler";
-import { basicMsg } from "./modules/game/websocket";
+import {
+    sendSocket,
+    websocketHandler
+} from "./modules/websocket/helpers/handler";
+import { websocketRoutes } from "./modules/websocket/websocket";
 
 const app = new Koa();
 
@@ -38,7 +41,7 @@ export const server = app.listen(port, () => {
 });
 
 const wss = new WebSocket.Server({ server });
-wss.on("connection", ws => {
-    ws.on("message", basicMsg);
-    ws.send(sendSocket("greeting", "something"));
+wss.on("connection", (ws: WebSocket) => {
+    ws.on("message", _ => websocketRoutes(ws, _));
+    ws.send(sendSocket("greeting", `Welcome!`));
 });
