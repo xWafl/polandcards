@@ -50,10 +50,10 @@ export class Board {
     }
 
     get gameData(): Record<string, Omit<Player, "deck" | "hand">> {
-        const player1 = this.player1;
+        const player1 = { ...this.player1 };
         delete player1.hand;
         delete player1.deck;
-        const player2 = this.player2;
+        const player2 = { ...this.player2 };
         delete player2.hand;
         delete player2.deck;
         return { player1, player2 };
@@ -77,6 +77,10 @@ export class Board {
             return new GameResponse(false, "Card slot out of bounds");
         }
         arr[slot] = { ...card, attackable: false };
+        playerHand.splice(
+            playerHand.findIndex(l => l.id === cardId),
+            1
+        );
         return new GameResponse(true);
     }
 
