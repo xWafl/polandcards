@@ -45,6 +45,10 @@ export class Board {
 
     constructor() {}
 
+    get gameEnded() {
+        return this.player1.health <= 0 || this.player2.health <= 0;
+    }
+
     public playCard(cardId: number, slot: number) {
         const player = this.player1Move ? 0 : 1;
         if (!(player === 0 || player === 1)) {
