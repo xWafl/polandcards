@@ -1,14 +1,16 @@
 import Koa from "koa";
 import Router from "koa-router";
-
 import logger from "koa-logger";
 import json from "koa-json";
 import bodyParser from "koa-bodyparser";
+import WebSocket from "ws";
 
 import errorHandler from "./common/error/middleware/errorHandler";
 
 import apiRouter from "./modules/apiRouter";
 import { allowCors } from "./modules/cors/middleware/allowCors";
+import { sendSocket } from "./modules/websocket/handler";
+import { basicMsg } from "./modules/game/websocket";
 
 const app = new Koa();
 
@@ -33,4 +35,10 @@ app.use(router.routes()).use(router.allowedMethods());
 
 export const server = app.listen(port, () => {
     console.info(`Koa app started and listening on port ${port}!`);
+});
+
+const wss = new WebSocket.Server({ server });
+wss.on("connection", ws => {
+    ws.on("message", basicMsg);
+    ws.send(sendSocket("greeting", "something"));
 });
