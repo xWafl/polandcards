@@ -26,18 +26,19 @@ export class Board {
         hand: []
     };
     public readonly player2: Player = {
-        cards: [] as BoardCard[],
-        health: 30,
-        gold: 0,
-        deck: [
+        cards: [
             <Card>{
                 id: 3,
-                name: "Litwa",
-                attack: 3,
-                health: 2,
-                gold: 3
+                name: "Suisse",
+                attack: 1,
+                health: 9,
+                gold: 3,
+                attackable: false
             }
-        ],
+        ] as BoardCard[],
+        health: 30,
+        gold: 0,
+        deck: [],
         hand: []
     };
     public turnNum = 0;

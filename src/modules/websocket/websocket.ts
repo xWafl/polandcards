@@ -25,6 +25,11 @@ const websocketRoutes = (
         ws.send(sendSocket("playerData", games[newMaxId].player1));
         return;
     }
+    if (category === "spectateGame") {
+        const { id } = data;
+        ws.send(sendSocket("gameData", games[id].gameData));
+        return;
+    }
     const gameId = data.id;
     if (category === "playCard") {
         games[gameId].playCard(data.cardId, data.slot);
