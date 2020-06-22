@@ -14,4 +14,13 @@ describe("Root route", () => {
 
         expect(games[0]).to.deep.equal(new Board());
     });
+    it("Gets game data", async () => {
+        const response = await request(server)
+            .get("/api/game/0")
+            .set("Accept", "application/json")
+            .expect("Content-Type", /json/)
+            .expect(200);
+
+        expect(response.body).to.deep.equal(new Board());
+    });
 });

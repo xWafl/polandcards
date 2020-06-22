@@ -4,7 +4,7 @@ import { GameResponse } from "../error/gameResponse";
 
 export class Board {
     public readonly player1: Player = {
-        cards: Array(4) as BoardCard[],
+        cards: [] as BoardCard[],
         health: 30,
         gold: 0,
         deck: [
@@ -26,7 +26,7 @@ export class Board {
         hand: []
     };
     public readonly player2: Player = {
-        cards: Array(4) as BoardCard[],
+        cards: [] as BoardCard[],
         health: 30,
         gold: 0,
         deck: [

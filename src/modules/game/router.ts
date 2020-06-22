@@ -1,8 +1,20 @@
 import Router from "koa-router";
 import { games } from "./games";
 import { Board } from "./actions/board";
+import { HttpError } from "../../common/error/classes/httpError";
 
 const router = new Router({ prefix: "/game" });
+
+router.get("/:id", async ctx => {
+    const { id } = ctx.params;
+
+    if (games[id]) {
+        ctx.body = games[id];
+    } else {
+        throw new HttpError(400, "The game specified does not exist");
+    }
+    return games[id];
+});
 
 router.post("/createGame", async ctx => {
     const newMaxId =
