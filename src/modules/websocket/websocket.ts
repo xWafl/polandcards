@@ -4,7 +4,7 @@ import { games } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
 
-const websocketRoutes = (ws: WebSocket, message: WSData): void => {
+const websocketRoutes = (wss: WebSocket.Server, ws: WebSocket, message: WSData): void => {
     const { category, data } = websocketHandler(message.toString());
     if (category === "newgame") {
         const newMaxId =

@@ -42,6 +42,6 @@ export const server = app.listen(port, () => {
 
 const wss = new WebSocket.Server({ server });
 wss.on("connection", (ws: WebSocket) => {
-    ws.on("message", _ => websocketRoutes(ws, _));
+    ws.on("message", _ => websocketRoutes(wss, ws, _));
     ws.send(sendSocket("greeting", `Welcome!`));
 });
