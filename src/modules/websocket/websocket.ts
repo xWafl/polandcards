@@ -1,4 +1,8 @@
-import { sendSocket, websocketHandler } from "./helpers/handler";
+import {
+    sendAllSockets,
+    sendSocket,
+    websocketHandler
+} from "./helpers/handler";
 import { WSData } from "./helpers/WSData";
 import { games } from "../game/games";
 import { Board } from "../game/actions/board";
@@ -29,8 +33,8 @@ const websocketRoutes = (
     }
     const publicState = games[gameId].gameData;
     const playerData = games[gameId].player1;
-    ws.send(sendSocket("gameData", publicState));
-    ws.send(sendSocket("playerData", playerData));
+    sendAllSockets(wss, "gameData", publicState);
+    sendAllSockets(wss, "playerData", playerData);
 };
 
 export { websocketRoutes };
