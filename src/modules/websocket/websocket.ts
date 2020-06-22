@@ -16,8 +16,16 @@ const websocketRoutes = (ws: WebSocket, message: WSData) => {
         ws.send(sendSocket("gameData", games[newMaxId].gameData));
         ws.send(sendSocket("playerData", games[newMaxId].player1));
     } else if (category === "playCard") {
+        console.log("Data", data);
         const gameId = data.id;
         games[gameId].playCard(data.cardId, data.slot);
+        const publicState = games[gameId].gameData;
+        const playerData = games[gameId].player1;
+        ws.send(sendSocket("gameData", publicState));
+        ws.send(sendSocket("playerData", playerData));
+    } else if (category === "attackCard") {
+        const gameId = data.id;
+        games[gameId].attack(data.cardId, data.receiverId);
         const publicState = games[gameId].gameData;
         const playerData = games[gameId].player1;
         ws.send(sendSocket("gameData", publicState));
