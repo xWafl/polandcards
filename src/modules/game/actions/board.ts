@@ -1,5 +1,6 @@
 import { BoardCard, Card } from "../types/Card";
 import { Player } from "../types/Player";
+import { GameResponse } from "../error/gameResponse";
 
 export class Board {
     public readonly player1: Player = {
@@ -39,19 +40,19 @@ export class Board {
 
     public playCard(player: number, cardId: number, slot: number) {
         if (!(player === 0 || player === 1)) {
-            return false;
+            return new GameResponse(false, "Player not valid");
         }
         const playerHand = player === 0 ? this.player1.hand : this.player2.hand;
         const card = playerHand.find(l => l.id === cardId);
         if (!card) {
-            return false;
+            return new GameResponse(false, "Card does not exist");
         }
         const arr = player === 0 ? this.player1.cards : this.player2.cards;
         if (arr[slot]) {
-            return false;
+            return new GameResponse(false, "Invalid card slot");
         }
         arr[slot] = { ...card, attackable: false };
-        return true;
+        return new GameResponse(true);
     }
 
     private removeDeadCards() {
@@ -76,19 +77,16 @@ export class Board {
             : this.player2.cards;
         const attackerCard = attackerCards.find(l => l?.id === attackerId);
         const receiverCard = receiverCards.find(l => l?.id === receiverId);
-        if (!(attackerCard && receiverCard)) {
-            return false;
+        if (!attackerCard || attackerId < 2) {
+            return new GameResponse(false, "Attacker does not exist");
         }
-        if (attackerId < 2) {
-            return false;
-        }
-        if (receiverId < 2) {
-            return false;
+        if (!receiverCard || receiverId < 2) {
+            return new GameResponse(false, "Receiver does not exist");
         }
         attackerCard.health -= receiverCard.attack;
         receiverCard.health -= attackerCard.attack;
         this.removeDeadCards();
-        return true;
+        return new GameResponse(true);
     }
 
     public endTurn() {
