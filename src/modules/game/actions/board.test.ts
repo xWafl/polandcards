@@ -21,13 +21,13 @@ describe("Board class", () => {
         it("Adds a card", () => {
             const board = new Board();
             board.playCard(0, myCard, 0);
-            expect(board.player1[0]).to.deep.equal(myCard);
+            expect(board.player1.cards[0]).to.deep.equal(myCard);
         });
         it("Does not add a card on an already placed card", () => {
             const board = new Board();
             board.playCard(0, myCard, 0);
             board.playCard(0, myOtherCard, 0);
-            expect(board.player1[0]).to.deep.equal(myCard);
+            expect(board.player1.cards[0]).to.deep.equal(myCard);
         });
     });
     describe("Card attacking", () => {
@@ -36,13 +36,13 @@ describe("Board class", () => {
         board.playCard(1, myOtherCard, 0);
         board.attack(2, 3);
         it("The attacker takes damage", () => {
-            expect(board.player1[0]).to.deep.equal({
+            expect(board.player1.cards[0]).to.deep.equal({
                 ...myCard,
                 ...{ health: 1 }
             });
         });
         it("The receiver takes damage", () => {
-            expect(board.player2[0]).to.equal(undefined);
+            expect(board.player2.cards[0]).to.equal(undefined);
         });
     });
 });
