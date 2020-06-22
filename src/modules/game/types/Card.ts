@@ -5,3 +5,5 @@ export interface Card {
     health: number;
     gold: number;
 }
+
+export type BoardCard = Card & { attackable: boolean };

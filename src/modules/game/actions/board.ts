@@ -1,31 +1,56 @@
-import { Card } from "../types/Card";
+import { BoardCard, Card } from "../types/Card";
 import { Player } from "../types/Player";
 
 export class Board {
     public readonly player1: Player = {
-        cards: Array(4) as Card[],
+        cards: Array(4) as BoardCard[],
         health: 30,
-        gold: 0
+        gold: 0,
+        deck: [],
+        hand: [
+            <Card>{
+                id: 2,
+                name: "Poland",
+                attack: 3,
+                health: 4,
+                gold: 3
+            }
+        ]
     };
     public readonly player2: Player = {
-        cards: Array(4) as Card[],
+        cards: Array(4) as BoardCard[],
         health: 30,
-        gold: 0
+        gold: 0,
+        deck: [],
+        hand: [
+            <Card>{
+                id: 3,
+                name: "Poland",
+                attack: 3,
+                health: 2,
+                gold: 3
+            }
+        ]
     };
     public turnNum = 0;
     public player1Move = true;
 
     constructor() {}
 
-    public playCard(player: number, card: Card, slot: number) {
+    public playCard(player: number, cardId: number, slot: number) {
         if (!(player === 0 || player === 1)) {
+            return false;
+        }
+        const playerHand = player === 0 ? this.player1.hand : this.player2.hand;
+        const card = playerHand.find(l => l.id === cardId);
+        if (!card) {
             return false;
         }
         const arr = player === 0 ? this.player1.cards : this.player2.cards;
         if (arr[slot]) {
             return false;
         }
-        arr[slot] = card;
+        arr[slot] = { ...card, attackable: false };
         return true;
     }
 

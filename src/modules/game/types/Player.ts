@@ -1,7 +1,9 @@
-import { Card } from "./Card";
+import { BoardCard, Card } from "./Card";
 
 export interface Player {
-    cards: Card[];
+    cards: BoardCard[];
     gold: number;
     health: number;
+    deck: Card[];
+    hand: Card[];
 }
