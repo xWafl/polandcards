@@ -8,7 +8,7 @@ export const requireAuthenticated = (): Middleware<
 > => async (ctx, next) => {
     const session = ctx.session!;
 
-    if (!session?.populated) {
+    if (!session.populated) {
         throw new HttpError(401, "You don't seem to be logged in");
     }
     ctx.session = session;
