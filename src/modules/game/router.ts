@@ -7,7 +7,7 @@ import { queue } from "./queue";
 
 const router = new Router({ prefix: "/game" });
 
-router.get("/:id", async ctx => {
+router.get("/:id", async (ctx, next) => {
     const { id } = ctx.params;
 
     if (games[id]) {
@@ -15,10 +15,10 @@ router.get("/:id", async ctx => {
     } else {
         throw new HttpError(400, "The game specified does not exist");
     }
-    return games[id];
+    await next();
 });
 
-router.post("/createGame", async ctx => {
+router.post("/createGame", async (ctx, next) => {
     const newMaxId =
         Object.keys(games).length === 0
             ? 0
@@ -31,7 +31,8 @@ router.post("/createGame", async ctx => {
     games[newMaxId].board.startGame();
 
     ctx.status = 201;
-    return (ctx.body = newMaxId);
+    ctx.body = newMaxId;
+    await next();
 });
 
 router.post("/joinQueue", requireAuthenticated(), async (ctx, next) => {
