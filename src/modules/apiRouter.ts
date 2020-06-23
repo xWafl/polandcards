@@ -1,4 +1,4 @@
-import Router from "koa-router";
+import Router from "./Router";
 
 import greetingsRouter from "./greetings/routes/";
 import gamesRouter from "./game/router";

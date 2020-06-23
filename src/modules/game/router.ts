@@ -1,4 +1,4 @@
-import Router from "koa-router";
+import Router from "../Router";
 import { games } from "./games";
 import { Board } from "./actions/board";
 import { HttpError } from "../../common/error/classes/httpError";
