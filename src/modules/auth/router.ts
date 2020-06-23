@@ -20,11 +20,12 @@ router.post(
         const session = ctx.session!;
 
         const user = await findUser("email", email);
-        if (!user)
+        if (!user) {
             throw new HttpError(
                 400,
                 "There seems to be no user with that email"
             );
+        }
 
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) throw new HttpError(400, "The password seems to be wrong");

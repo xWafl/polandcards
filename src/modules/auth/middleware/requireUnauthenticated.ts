@@ -8,7 +8,7 @@ export const requireUnauthenticated = (): Middleware<
 > => async (ctx, next) => {
     const session = ctx.session!;
 
-    if (session.user) {
+    if (session?.user) {
         throw new HttpError(401, "You seem to be already logged in");
     }
 

@@ -23,6 +23,7 @@ export const websocketRoutes = (
         games[newMaxId].board.startGame();
         ws.send(sendSocket("gameData", games[newMaxId].board.gameData));
         ws.send(sendSocket("playerData", games[newMaxId].board.player1));
+        ws.send(sendSocket("gameLoaded", ""));
         return;
     }
     if (category === "spectateGame") {

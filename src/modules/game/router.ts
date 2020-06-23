@@ -21,11 +21,15 @@ router.post("/createGame", async ctx => {
         Object.keys(games).length === 0
             ? 0
             : Math.max(...Object.keys(games).map(Number)) + 1;
-    games[newMaxId].board = new Board();
+    games[newMaxId] = {
+        player1key: "p1",
+        player2key: "p2",
+        board: new Board()
+    };
     games[newMaxId].board.startGame();
 
     ctx.status = 201;
-    return (ctx.body = "Success");
+    return (ctx.body = newMaxId);
 });
 
 export default router.routes();
