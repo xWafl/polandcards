@@ -1,11 +1,11 @@
 import Router from "./Router";
 
-import greetingsRouter from "./greetings/routes/";
+import usersRouter from "./users/router";
 import gamesRouter from "./game/router";
 
 const apiRouter = new Router({ prefix: "/api" });
 
-apiRouter.use(greetingsRouter);
+apiRouter.use(usersRouter);
 apiRouter.use(gamesRouter);
 
 export default apiRouter.routes();
