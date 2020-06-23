@@ -7,6 +7,7 @@ import { WSData } from "./helpers/WSData";
 import { games } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
+import { genGameKey } from "../game/actions/auth";
 
 const websocketRoutes = (
     wss: WebSocket.Server,
@@ -19,16 +20,23 @@ const websocketRoutes = (
             Object.keys(games).length === 0
                 ? 0
                 : Math.max(...Object.keys(games).map(Number)) + 1;
-        games[newMaxId].board = new Board();
+        games[newMaxId] = {
+            player1key: genGameKey(),
+            player2key: genGameKey(),
+            board: new Board()
+        };
         games[newMaxId].board.startGame();
-        ws.send(sendSocket("gameData", games[newMaxId].board.gameData));
-        ws.send(sendSocket("playerData", games[newMaxId].board.player1));
         return;
     }
-    if (category === "spectateGame") {
-        const { id } = data;
+    if (category === "joinGame") {
+        const { key, id } = data;
+        if (games[id].player1key === key) {
+            ws.send(sendSocket("playerData", games[id].board.player1));
+        } else if (games[id].player2key === key) {
+            ws.send(sendSocket("playerData", games[id].board.player1));
+        }
         ws.send(sendSocket("gameData", games[id].board.gameData));
-        return;
+        ws.send(sendSocket("gameLoaded", ""));
     }
     const gameId = data.id;
     if (category === "playCard") {
