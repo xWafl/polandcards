@@ -14,6 +14,7 @@ import {
     websocketHandler
 } from "./modules/websocket/helpers/handler";
 import { websocketRoutes } from "./modules/websocket/websocket";
+import { useSession } from "./modules/session/helpers/useSession";
 
 const app = new Koa();
 
@@ -23,7 +24,7 @@ const port = process.env.PORT || 5901;
 
 app.use(bodyParser());
 app.use(json());
-app.use(allowCors());
+app.use(useSession(app)).use(allowCors());
 
 /* istanbul ignore if */
 if (process.env.NODE_ENV === "development") {
