@@ -1,3 +1,3 @@
-import { Board } from "./actions/board";
+import { GameState } from "./types/GameState";
 
-export const games: Record<number, Board> = {};
+export const games: Record<number, GameState> = {};
