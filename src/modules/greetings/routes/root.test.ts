@@ -5,7 +5,7 @@ import knex from "../../../../db/knex";
 
 import { server } from "../../../";
 
-import greetings from "../../../../db/seeds/examples/greetings";
+import greetings from "../../../../db/seeds/examples/users";
 
 describe("Root route", () => {
     before(async () => {
