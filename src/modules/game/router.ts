@@ -38,7 +38,7 @@ router.post("/createGame", async (ctx, next) => {
 router.post("/joinQueue", requireAuthenticated(), async (ctx, next) => {
     const id = ctx.session!.user;
     console.log(`New user: ${id} | Queue: `, queue);
-    if (!queue.includes(id)) {
+    if (!queue.some(l => l.id === id)) {
         queue.push({
             id,
             ws: null

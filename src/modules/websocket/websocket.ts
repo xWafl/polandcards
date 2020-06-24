@@ -8,7 +8,6 @@ import { games } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
 import { queue } from "../game/queue";
-import { HttpError } from "../../common/error/classes/httpError";
 
 export const websocketRoutes = (
     wss: WebSocket.Server,
@@ -22,34 +21,25 @@ export const websocketRoutes = (
     if (category === "awaitMatch") {
         const id = data;
         const currQueueling = queue.find(l => l.id === id);
-        if (!currQueueling) {
-            queue.push({
-                id,
-                ws
-            });
-        } else {
+        if (currQueueling) {
             currQueueling.ws = ws;
-        }
-        if (queue.length >= 2) {
-            const newMaxId =
-                Object.keys(games).length === 0
-                    ? 0
-                    : Math.max(...Object.keys(games).map(Number)) + 1;
-            games[newMaxId] = {
-                player1key: "p1",
-                player2key: "p2",
-                board: new Board()
-            };
-            games[newMaxId].board.startGame();
-            const newGame = games[newMaxId];
-            const user1 = queue.shift();
-            const user2 = queue.shift();
-            user1!.ws!.send(
-                sendSocket("gameStarted", { key: newGame.player1key })
-            );
-            user2!.ws!.send(
-                sendSocket("gameStarted", { key: newGame.player2key })
-            );
+            if (queue.length >= 2) {
+                const newMaxId =
+                    Object.keys(games).length === 0
+                        ? 0
+                        : Math.max(...Object.keys(games).map(Number)) + 1;
+                games[newMaxId] = {
+                    player1key: "p1",
+                    player2key: "p2",
+                    board: new Board()
+                };
+                games[newMaxId].board.startGame();
+                const newGame = games[newMaxId];
+                const user1 = queue.shift();
+                const user2 = queue.shift();
+                user1!.ws!.send(sendSocket("gameStarted", newGame.player1key));
+                user2!.ws!.send(sendSocket("gameStarted", newGame.player2key));
+            }
         }
         return;
     }
