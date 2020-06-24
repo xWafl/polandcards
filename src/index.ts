@@ -15,6 +15,7 @@ import {
 } from "./modules/websocket/helpers/handler";
 import { websocketRoutes } from "./modules/websocket/websocket";
 import { useSession } from "./modules/session/helpers/useSession";
+import { setWsHeartbeat } from "ws-heartbeat/server";
 
 const app = new Koa();
 
@@ -45,4 +46,10 @@ const wss = new WebSocket.Server({ server });
 wss.on("connection", (ws: WebSocket) => {
     ws.on("message", _ => websocketRoutes(wss, ws, _));
     ws.send(sendSocket("greeting", `Welcome!`));
+});
+setWsHeartbeat(wss, (ws: WebSocket, data: unknown, binary: unknown) => {
+    if (data === '{"kind":"ping"}') {
+        console.log("We got a ping!");
+        ws.send('{"kind":"pong"}');
+    }
 });

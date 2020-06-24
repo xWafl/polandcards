@@ -36,10 +36,17 @@ router.post("/createGame", async (ctx, next) => {
 });
 
 router.post("/joinQueue", requireAuthenticated(), async (ctx, next) => {
-    const { userId } = ctx.session!.user;
-    if (!queue.includes(userId)) {
-        queue.push(userId);
-        ctx.body = "Success";
+    const id = ctx.session!.user;
+    console.log(`New user: ${id} | Queue: `, queue);
+    if (!queue.includes(id)) {
+        queue.push({
+            id,
+            ws: null
+        });
+        ctx.body = {
+            message: "Success",
+            id: id
+        };
     } else {
         throw new HttpError(400, "You are already in the queue");
     }
@@ -50,7 +57,9 @@ router.post("/leaveQueue", requireAuthenticated(), async (ctx, next) => {
     const { userId } = ctx.session!.user;
     if (queue.includes(userId)) {
         queue.splice(queue.indexOf(userId));
-        ctx.body = "Success";
+        ctx.body = {
+            message: "Success"
+        };
     } else {
         throw new HttpError(400, "You are not in the queue");
     }
