@@ -18,26 +18,8 @@ router.get("/:id", async (ctx, next) => {
     await next();
 });
 
-router.post("/createGame", async (ctx, next) => {
-    const newMaxId =
-        Object.keys(games).length === 0
-            ? 0
-            : Math.max(...Object.keys(games).map(Number)) + 1;
-    games[newMaxId] = {
-        player1key: "p1",
-        player2key: "p2",
-        board: new Board()
-    };
-    games[newMaxId].board.startGame();
-
-    ctx.status = 201;
-    ctx.body = newMaxId;
-    await next();
-});
-
 router.post("/joinQueue", requireAuthenticated(), async (ctx, next) => {
     const id = ctx.session!.user;
-    console.log(`New user: ${id} | Queue: `, queue);
     if (!queue.some(l => l.id === id)) {
         queue.push({
             id,
@@ -55,8 +37,8 @@ router.post("/joinQueue", requireAuthenticated(), async (ctx, next) => {
 
 router.post("/leaveQueue", requireAuthenticated(), async (ctx, next) => {
     const { userId } = ctx.session!.user;
-    if (queue.includes(userId)) {
-        queue.splice(queue.indexOf(userId));
+    if (queue.some(l => l.id === userId)) {
+        queue.splice(queue.findIndex(l => l.id === userId));
         ctx.body = {
             message: "Success"
         };

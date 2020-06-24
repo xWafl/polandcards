@@ -1,8 +1,4 @@
-import {
-    sendAllSockets,
-    sendSocket,
-    websocketHandler
-} from "./helpers/handler";
+import { sendSocket, websocketHandler } from "./helpers/handler";
 import { WSData } from "./helpers/WSData";
 import { games } from "../game/games";
 import { Board } from "../game/actions/board";
@@ -24,50 +20,85 @@ export const websocketRoutes = (
         if (currQueueling) {
             currQueueling.ws = ws;
             if (queue.length >= 2) {
+                const user1 = queue.shift();
+                const user2 = queue.shift();
                 const newMaxId =
                     Object.keys(games).length === 0
                         ? 0
                         : Math.max(...Object.keys(games).map(Number)) + 1;
                 games[newMaxId] = {
-                    player1key: "p1",
-                    player2key: "p2",
+                    player1: {
+                        id: user1!.id,
+                        key: "p1",
+                        ws: null
+                    },
+                    player2: {
+                        id: user2!.id,
+                        key: "p2",
+                        ws: null
+                    },
                     board: new Board()
                 };
                 games[newMaxId].board.startGame();
                 const newGame = games[newMaxId];
-                const user1 = queue.shift();
-                const user2 = queue.shift();
-                user1!.ws!.send(sendSocket("gameStarted", newGame.player1key));
-                user2!.ws!.send(sendSocket("gameStarted", newGame.player2key));
+                user1!.ws!.send(
+                    sendSocket("gameStarted", {
+                        key: newGame.player1.key,
+                        id: newMaxId,
+                        flipped: false
+                    })
+                );
+                user2!.ws!.send(
+                    sendSocket("gameStarted", {
+                        key: newGame.player2.key,
+                        id: newMaxId,
+                        flipped: true
+                    })
+                );
             }
         }
         return;
     }
-    if (category === "newgame") {
-        const newMaxId =
-            Object.keys(games).length === 0
-                ? 0
-                : Math.max(...Object.keys(games).map(Number)) + 1;
-        games[newMaxId].board = new Board();
-        games[newMaxId].board.startGame();
-        ws.send(sendSocket("gameData", games[newMaxId].board.gameData));
-        ws.send(sendSocket("playerData", games[newMaxId].board.player1));
-        ws.send(sendSocket("gameLoaded", ""));
+    if (category === "joinGame") {
+        const { gameId, key } = data;
+        if (games[gameId]) {
+            ws.send(sendSocket("gameData", games[gameId].board.gameData));
+            if (games[gameId].player1.key === key) {
+                games[gameId].player1.ws = ws;
+                ws.send(sendSocket("playerData", games[gameId].board.player1));
+            } else if (games[gameId].player2.key === key) {
+                games[gameId].player2.ws = ws;
+                ws.send(sendSocket("playerData", games[gameId].board.player2));
+            }
+            ws.send(sendSocket("gameLoaded", ""));
+        }
         return;
     }
-    if (category === "spectateGame") {
-        const { id } = data;
-        ws.send(sendSocket("gameData", games[id].board.gameData));
+    // Everything from here on out requires a key
+    const { gameId, key } = data;
+    const game = games[gameId];
+    if (!game) return;
+    if (!game.player1.key === key && !game.player2.key === key) return;
+    const currPlayer = game.player1.key === key ? game.player1 : game.player2;
+    if (ws !== currPlayer.ws) currPlayer.ws = ws;
+    if (category === "endTurn") {
+        game.board.endTurn();
         return;
     }
-    const gameId = data.id;
     if (category === "playCard") {
         games[gameId].board.playCard(data.cardId, data.slot);
     } else if (category === "attackCard") {
         games[gameId].board.attack(data.cardId, data.receiverId);
     }
     const publicState = games[gameId].board.gameData;
-    const playerData = games[gameId].board.player1;
-    sendAllSockets(wss, "gameData", publicState);
-    sendAllSockets(wss, "playerData", playerData);
+    const player1Data = games[gameId].board.player1;
+    const player2Data = games[gameId].board.player2;
+    if (games[gameId].player1.ws) {
+        games[gameId].player1.ws!.send(sendSocket("gameData", publicState));
+        games[gameId].player1.ws!.send(sendSocket("playerData", player1Data));
+    }
+    if (games[gameId].player2.ws) {
+        games[gameId].player2.ws!.send(sendSocket("gameData", publicState));
+        games[gameId].player2.ws!.send(sendSocket("playerData", player2Data));
+    }
 };

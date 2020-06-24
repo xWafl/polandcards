@@ -4,7 +4,7 @@ import WebSocket from "ws";
 interface PlayerState {
     id: number;
     key: string;
-    ws: WebSocket;
+    ws: WebSocket | null;
 }
 
 export interface GameState {
