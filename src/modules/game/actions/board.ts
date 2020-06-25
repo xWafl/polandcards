@@ -62,9 +62,6 @@ export class Board {
 
     public playCard(cardId: number, slot: number) {
         const player = this.player1Move ? 0 : 1;
-        if (!(player === 0 || player === 1)) {
-            return new GameResponse(false, "Player not valid");
-        }
         const playerHand = player === 0 ? this.player1.hand : this.player2.hand;
         const card = playerHand.find(l => l.id === cardId);
         if (!card) {
