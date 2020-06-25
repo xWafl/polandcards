@@ -35,8 +35,7 @@ export class Board {
                 name: "Suisse",
                 attack: 1,
                 health: 9,
-                gold: 3,
-                attackable: false
+                gold: 3
             }
         ],
         hand: []
@@ -75,6 +74,21 @@ export class Board {
         return cards.flatMap((l, idx) => (!l ? [idx] : []));
     }
 
+    get interactableSpots() {
+        const player = this.player1move ? 0 : 1;
+        const playerCards =
+            player === 0 ? this.player1.cards : this.player2.cards;
+        const opponentCards =
+            player === 1 ? this.player1.cards : this.player2.cards;
+        if (opponentCards.length === 0 || opponentCards.every(l => !l)) {
+            return [];
+        }
+        const cards = Array(4)
+            .fill(null)
+            .map((_, idx) => playerCards[idx]);
+        return cards.flatMap((l, idx) => (l?.interactable ? [idx] : []));
+    }
+
     get attackableSpots() {
         const opponent = this.player1move ? 1 : 0;
         const playerCards =
@@ -99,7 +113,7 @@ export class Board {
         if (slot > 4) {
             return new GameResponse(false, "Card slot out of bounds");
         }
-        arr[slot] = { ...card, attackable: false };
+        arr[slot] = { ...card, interactable: false };
         playerHand.splice(
             playerHand.findIndex(l => l.id === cardId),
             1
@@ -135,8 +149,10 @@ export class Board {
         if (!receiverCard || receiverId < 2) {
             return new GameResponse(false, "Receiver does not exist");
         }
+        if (!attackerCard.interactable) return;
         attackerCard.health -= receiverCard.attack;
         receiverCard.health -= attackerCard.attack;
+        attackerCard.interactable = false;
         this.removeDeadCards();
         return new GameResponse(true);
     }
@@ -164,8 +180,18 @@ export class Board {
     public endTurn() {
         if (this.player1move) {
             this.player1move = false;
+            this.player1.cards.map(l => {
+                if (l) {
+                    l.interactable = true;
+                }
+            });
         } else {
             this.player1move = true;
+            this.player2.cards.map(l => {
+                if (l) {
+                    l.interactable = true;
+                }
+            });
             this.turnNum++;
             this.drawCards(0);
             this.drawCards(1);

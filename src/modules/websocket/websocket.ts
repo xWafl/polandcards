@@ -4,6 +4,7 @@ import { games, gameStatePublic } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
 import { queue } from "../game/queue";
+import { TypeGuard } from "../../common/types/helpers/TypeGuard";
 
 export const websocketRoutes = (
     wss: WebSocket.Server,
@@ -82,15 +83,19 @@ export const websocketRoutes = (
     if (!game.player1.key === key && !game.player2.key === key) return;
     const currPlayer = game.player1.key === key ? game.player1 : game.player2;
     if (ws !== currPlayer.ws) currPlayer.ws = ws;
-    if (category === "playableSpots") {
+    if (
+        TypeGuard<
+            string,
+            "playableSpots" | "attackableSpots" | "interactableSpots"
+        >(
+            category,
+            category === "playableSpots" ||
+                category === "attackableSpots" ||
+                category === "interactableSpots"
+        )
+    ) {
         if (currPlayer.key === key) {
-            ws.send(sendSocket("playableSpots", game.board.playableSpots));
-        }
-        return;
-    }
-    if (category === "attackableSpots") {
-        if (currPlayer.key === key) {
-            ws.send(sendSocket("attackableSpots", game.board.attackableSpots));
+            ws.send(sendSocket(category, game.board[category]));
         }
         return;
     }
@@ -104,12 +109,16 @@ export const websocketRoutes = (
     const publicState = gameStatePublic(games[gameId]);
     const player1Data = games[gameId].board.player1;
     const player2Data = games[gameId].board.player2;
-    if (games[gameId].player1.ws) {
-        games[gameId].player1.ws!.send(sendSocket("gameData", publicState));
-        games[gameId].player1.ws!.send(sendSocket("playerData", player1Data));
+    const nextPlayer = game.board.player1move ? game.player1 : game.player2;
+    if (game.player1.ws) {
+        game.player1.ws!.send(sendSocket("gameData", publicState));
+        game.player1.ws!.send(sendSocket("playerData", player1Data));
     }
-    if (games[gameId].player2.ws) {
-        games[gameId].player2.ws!.send(sendSocket("gameData", publicState));
-        games[gameId].player2.ws!.send(sendSocket("playerData", player2Data));
+    if (game.player2.ws) {
+        game.player2.ws!.send(sendSocket("gameData", publicState));
+        game.player2.ws!.send(sendSocket("playerData", player2Data));
     }
+    nextPlayer.ws!.send(
+        sendSocket("interactableSpots", game.board.interactableSpots)
+    );
 };

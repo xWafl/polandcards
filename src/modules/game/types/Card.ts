@@ -6,4 +6,4 @@ export interface Card {
     gold: number;
 }
 
-export type BoardCard = Card & { attackable: boolean };
+export type BoardCard = Card & { interactable: boolean };
