@@ -84,9 +84,7 @@ export const websocketRoutes = (
     if (ws !== currPlayer.ws) currPlayer.ws = ws;
     if (category === "endTurn") {
         game.board.endTurn();
-        return;
-    }
-    if (category === "playCard") {
+    } else if (category === "playCard") {
         games[gameId].board.playCard(data.cardId, data.slot);
     } else if (category === "attackCard") {
         games[gameId].board.attack(data.cardId, data.receiverId);
