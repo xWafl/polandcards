@@ -9,10 +9,7 @@ import errorHandler from "./common/error/middleware/errorHandler";
 
 import apiRouter from "./modules/apiRouter";
 import { allowCors } from "./modules/cors/middleware/allowCors";
-import {
-    sendSocket,
-    websocketHandler
-} from "./modules/websocket/helpers/handler";
+import { sendSocket } from "./modules/websocket/helpers/handler";
 import { websocketRoutes } from "./modules/websocket/websocket";
 import { useSession } from "./modules/session/helpers/useSession";
 import { setWsHeartbeat } from "ws-heartbeat/server";
@@ -47,9 +44,8 @@ wss.on("connection", (ws: WebSocket) => {
     ws.on("message", _ => websocketRoutes(wss, ws, _));
     ws.send(sendSocket("greeting", `Welcome!`));
 });
-setWsHeartbeat(wss, (ws: WebSocket, data: unknown, binary: unknown) => {
+setWsHeartbeat(wss, (ws: WebSocket, data: unknown) => {
     if (data === '{"category":"ping"}') {
-        console.log("We got a ping!");
         ws.send('{"category":"pong"}');
     }
 });
