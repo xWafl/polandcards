@@ -26,7 +26,10 @@ export class Board {
         hand: []
     };
     public readonly player2: Player = {
-        cards: [
+        cards: [] as BoardCard[],
+        health: 30,
+        gold: 0,
+        deck: [
             <Card>{
                 id: 3,
                 name: "Suisse",
@@ -35,14 +38,11 @@ export class Board {
                 gold: 3,
                 attackable: false
             }
-        ] as BoardCard[],
-        health: 30,
-        gold: 0,
-        deck: [],
+        ],
         hand: []
     };
     public turnNum = 0;
-    public player1Move = true;
+    public player1move = true;
 
     constructor() {}
 
@@ -50,18 +50,23 @@ export class Board {
         return this.player1.health <= 0 || this.player2.health <= 0;
     }
 
-    get gameData(): Record<string, Omit<Player, "deck" | "hand">> {
+    get gameData() {
         const player1 = { ...this.player1 };
         delete player1.hand;
         delete player1.deck;
         const player2 = { ...this.player2 };
         delete player2.hand;
         delete player2.deck;
-        return { player1, player2 };
+        return {
+            turnNum: this.turnNum,
+            player1move: this.player1move,
+            player1,
+            player2
+        };
     }
 
     public playCard(cardId: number, slot: number) {
-        const player = this.player1Move ? 0 : 1;
+        const player = this.player1move ? 0 : 1;
         const playerHand = player === 0 ? this.player1.hand : this.player2.hand;
         const card = playerHand.find(l => l.id === cardId);
         if (!card) {
@@ -96,10 +101,10 @@ export class Board {
     }
 
     public attack(attackerId: number, receiverId: number) {
-        const attackerCards = this.player1Move
+        const attackerCards = this.player1move
             ? this.player1.cards
             : this.player2.cards;
-        const receiverCards = !this.player1Move
+        const receiverCards = !this.player1move
             ? this.player1.cards
             : this.player2.cards;
         const attackerCard = attackerCards.find(l => l?.id === attackerId);
@@ -137,10 +142,10 @@ export class Board {
     }
 
     public endTurn() {
-        if (this.player1Move) {
-            this.player1Move = false;
+        if (this.player1move) {
+            this.player1move = false;
         } else {
-            this.player1Move = true;
+            this.player1move = true;
             this.turnNum++;
             this.drawCards(0);
             this.drawCards(1);
