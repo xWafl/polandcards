@@ -1,6 +1,6 @@
 import { sendSocket, websocketHandler } from "./helpers/handler";
 import { WSData } from "./helpers/WSData";
-import { games } from "../game/games";
+import { games, gameStatePublic } from "../game/games";
 import { Board } from "../game/actions/board";
 import WebSocket from "ws";
 import { queue } from "../game/queue";
@@ -18,6 +18,7 @@ export const websocketRoutes = (
         const id = data;
         const currQueueling = queue.find(l => l.id === id);
         if (currQueueling) {
+            console.log(`Setting websocket for ${id}`);
             currQueueling.ws = ws;
             if (queue.length >= 2) {
                 const user1 = queue.shift();
@@ -62,7 +63,7 @@ export const websocketRoutes = (
     if (category === "joinGame") {
         const { gameId, key } = data;
         if (games[gameId]) {
-            ws.send(sendSocket("gameData", games[gameId].board.gameData));
+            ws.send(sendSocket("gameData", gameStatePublic(games[gameId])));
             if (games[gameId].player1.key === key) {
                 games[gameId].player1.ws = ws;
                 ws.send(sendSocket("playerData", games[gameId].board.player1));
@@ -90,7 +91,7 @@ export const websocketRoutes = (
     } else if (category === "attackCard") {
         games[gameId].board.attack(data.cardId, data.receiverId);
     }
-    const publicState = games[gameId].board.gameData;
+    const publicState = gameStatePublic(games[gameId]);
     const player1Data = games[gameId].board.player1;
     const player2Data = games[gameId].board.player2;
     if (games[gameId].player1.ws) {
