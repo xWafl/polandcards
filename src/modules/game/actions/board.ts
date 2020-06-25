@@ -65,6 +65,16 @@ export class Board {
         };
     }
 
+    public getPlayableSpots() {
+        const player = this.player1move ? 0 : 1;
+        const playerCards =
+            player === 0 ? this.player1.cards : this.player2.cards;
+        const cards = Array(4)
+            .fill(null)
+            .map((_, idx) => playerCards[idx]);
+        return cards.flatMap((l, idx) => (!l ? [idx] : []));
+    }
+
     public playCard(cardId: number, slot: number) {
         const player = this.player1move ? 0 : 1;
         const playerHand = player === 0 ? this.player1.hand : this.player2.hand;

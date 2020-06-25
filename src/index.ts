@@ -48,8 +48,8 @@ wss.on("connection", (ws: WebSocket) => {
     ws.send(sendSocket("greeting", `Welcome!`));
 });
 setWsHeartbeat(wss, (ws: WebSocket, data: unknown, binary: unknown) => {
-    if (data === '{"kind":"ping"}') {
+    if (data === '{"category":"ping"}') {
         console.log("We got a ping!");
-        ws.send('{"kind":"pong"}');
+        ws.send('{"category":"pong"}');
     }
 });
