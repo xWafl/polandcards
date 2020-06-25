@@ -65,7 +65,7 @@ export class Board {
         };
     }
 
-    public getPlayableSpots() {
+    get playableSpots() {
         const player = this.player1move ? 0 : 1;
         const playerCards =
             player === 0 ? this.player1.cards : this.player2.cards;
@@ -73,6 +73,16 @@ export class Board {
             .fill(null)
             .map((_, idx) => playerCards[idx]);
         return cards.flatMap((l, idx) => (!l ? [idx] : []));
+    }
+
+    get attackableSpots() {
+        const opponent = this.player1move ? 1 : 0;
+        const playerCards =
+            opponent === 0 ? this.player1.cards : this.player2.cards;
+        const cards = Array(4)
+            .fill(null)
+            .map((_, idx) => playerCards[idx]);
+        return cards.flatMap((l, idx) => (l ? [idx] : []));
     }
 
     public playCard(cardId: number, slot: number) {
