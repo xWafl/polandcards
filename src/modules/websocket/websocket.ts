@@ -83,7 +83,9 @@ export const websocketRoutes = (
     const currPlayer = game.player1.key === key ? game.player1 : game.player2;
     if (ws !== currPlayer.ws) currPlayer.ws = ws;
     if (category === "playableSpots") {
-        ws.send(sendSocket("playableSpots", game.board.getPlayableSpots()));
+        if (currPlayer.key === key) {
+            ws.send(sendSocket("playableSpots", game.board.getPlayableSpots()));
+        }
         return;
     }
     if (category === "endTurn") {
