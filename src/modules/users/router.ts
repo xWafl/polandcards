@@ -27,4 +27,14 @@ router.post(
     }
 );
 
+router.get("/userData/:category/:query", async (ctx, next) => {
+    const { category, query } = ctx.params;
+    const user = await findUser(category, query);
+    if (!user) {
+        throw new HttpError(400, "No user exists");
+    }
+    ctx.body = user;
+    await next();
+});
+
 export default router.routes();
